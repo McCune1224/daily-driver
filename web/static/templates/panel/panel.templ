@@ -1,0 +1,11 @@
+package panel
+
+import "daily-driver/web/static/templates"
+
+templ Panel(children ...templ.Component) {
+	@templates.Base() {
+		<div class="p-4">
+			{ children... }
+		</div>
+	}
+}
