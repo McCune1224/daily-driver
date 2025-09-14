@@ -1,11 +1,15 @@
-package handler
+package internal
 
 import (
+	"daily-driver/internal/api/art"
 	"daily-driver/web/static/templates"
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
 )
+
+type Handler struct {
+}
 
 // This custom Render replaces Echo's echo.Context.Render() with templ's templ.Component.Render().
 func Render(ctx echo.Context, statusCode int, t templ.Component) error {
@@ -19,8 +23,19 @@ func Render(ctx echo.Context, statusCode int, t templ.Component) error {
 	return ctx.HTML(statusCode, buf.String())
 }
 
-func AttachRoutes(e *echo.Echo) {
+func (h *Handler) AttachRoutes(e *echo.Echo) {
 	e.GET("/", func(c echo.Context) error {
 		return Render(c, 200, templates.Index())
 	})
+	e.GET("/artwork", h.GetArtwork)
+}
+
+func (h *Handler) GetArtwork(c echo.Context) error {
+	artAPI := art.NewChicagoAPIClient()
+	artwork, err := artAPI.GetRandomArtwork()
+	if err != nil {
+		return c.String(500, "Error fetching artwork")
+	}
+
+	return Render(c, 200, templates.ArtPanel(artwork))
 }

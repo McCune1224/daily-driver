@@ -1,0 +1,18 @@
+package templates
+
+import "daily-driver/internal/api/art"
+import "daily-driver/web/static/templates/panel"
+
+const example = "https://www.artic.edu/iiif/2/2d484387-2509-5e8e-2c43-22f9981972eb/full/843,/0/default.jpg"
+
+templ ArtPanel(art *art.ChicagoArtworkResponse) {
+	@panel.Panel() {
+		<h1 class="text-2xl font-bold mb-4">Artwork Details</h1>
+		<div class="bg-white shadow-md rounded-lg p-6 mb-6">
+			<h1>{ art.Data[0].Title }</h1>
+			<img src={ example } alt={ art.Data[0].Title } class="w-full h-auto mt-4 rounded"/>
+			<p class="mt-4">{ art.Data[0].Artist }</p>
+			<p class="mt-4">{ art.Data[0].IIIFURL }</p>
+		</div>
+	}
+}

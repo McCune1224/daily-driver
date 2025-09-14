@@ -1,7 +1,7 @@
 package main
 
 import (
-	handler "daily-driver/internal"
+	handler "daily-driver/internal/handler"
 	"os"
 
 	_ "github.com/joho/godotenv/autoload"
@@ -32,6 +32,7 @@ func main() {
 	//static files:
 	app.Static("/static", "web/static")
 
+	handler := &handler.Handler{}
 	handler.AttachRoutes(app)
 	// start server:
 	app.Logger.Fatal(app.Start(":" + getPort()))
