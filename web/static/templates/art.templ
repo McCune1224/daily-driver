@@ -3,16 +3,24 @@ package templates
 import "daily-driver/internal/api/art"
 import "daily-driver/web/static/templates/panel"
 
-const example = "https://www.artic.edu/iiif/2/2d484387-2509-5e8e-2c43-22f9981972eb/full/843,/0/default.jpg"
-
-templ ArtPanel(art *art.Artwork) {
+templ PanelArt() {
 	@Base() {
+		<div
+			hx-target="#panel-art"
+			hx-swap="innerHTML"
+			hx-get="/art/api/random"
+			hx-trigger="load, every 15m"
+		></div>
 		@panel.Panel() {
-			<h1 class="text-2xl font-bold mb-4">Artwork Details</h1>
-			<div class="bg-white shadow-md rounded-lg p-6 mb-6">
-				<h1>{ art.Title } By { art.ArtistDisplay }</h1>
-				<img src={ art.ImageURL() } alt={ art.Title } class="w-full h-auto mt-4 rounded"/>
-			</div>
+			<div id="panel-art"></div>
 		}
 	}
+}
+
+templ ComponentArtpiece(art *art.Artwork) {
+	<div class="border p-4 rounded shadow hover:shadow-lg transition duration-300">
+		<h2 class="text-xl font-semibold mb-2">{ art.Title }</h2>
+		<p class="text-gray-600 mb-4">{ art.ArtistDisplay }</p>
+		<img src={ art.ImageURL() } alt={ art.Title } class="w-full h-auto"/>
+	</div>
 }

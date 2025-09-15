@@ -6,13 +6,18 @@ import (
 	"io"
 	"math/rand"
 	"net/http"
+	"sync"
+	"time"
 )
 
 const ChicagoArtInstituteAPIURL = "https://api.artic.edu/api/v1/artworks"
 
 type ChicagoArtAPIHandler struct {
-	BaseURL string
-	Client  *http.Client
+	BaseURL    string
+	Client     *http.Client
+	TotalCount int
+	Mutex      sync.Mutex
+	LastUpdate time.Time
 }
 
 func NewChicagoAPIClient() *ChicagoArtAPIHandler {
@@ -60,8 +65,8 @@ type Pagination struct {
 }
 
 func (api *ChicagoArtAPIHandler) GetRandomArtwork() (*Artwork, error) {
-	// Method 1: Get total count and fetch random page
-	totalCount, err := api.GetTotalArtworkCount()
+	// Get cached total count or fetch it if not available
+	totalCount, err := api.GetCachedTotalArtworkCount()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get total count: %w", err)
 	}
@@ -95,7 +100,24 @@ func (api *ChicagoArtAPIHandler) GetRandomArtwork() (*Artwork, error) {
 	return detailedArtwork, nil
 }
 
-func (api *ChicagoArtAPIHandler) GetTotalArtworkCount() (int, error) {
+func (api *ChicagoArtAPIHandler) GetCachedTotalArtworkCount() (int, error) {
+	api.Mutex.Lock()
+	defer api.Mutex.Unlock()
+
+	// If cached value is stale or not set, fetch fresh count
+	if time.Since(api.LastUpdate) > 24*time.Hour || api.TotalCount == 0 {
+		totalCount, err := api.fetchTotalArtworkCount()
+		if err != nil {
+			return 0, err
+		}
+		api.TotalCount = totalCount
+		api.LastUpdate = time.Now()
+	}
+
+	return api.TotalCount, nil
+}
+
+func (api *ChicagoArtAPIHandler) fetchTotalArtworkCount() (int, error) {
 	url := fmt.Sprintf("%s?limit=1", ChicagoArtInstituteAPIURL)
 
 	resp, err := http.Get(url)

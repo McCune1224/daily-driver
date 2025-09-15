@@ -1,13 +1,13 @@
 package internal
 
 import (
-	"daily-driver/internal/api/art"
 	"daily-driver/web/static/templates"
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
 )
 
+// TODO: Add DB stuff?
 type Handler struct {
 }
 
@@ -27,24 +27,9 @@ func (h *Handler) AttachRoutes(e *echo.Echo) {
 	e.GET("/", func(c echo.Context) error {
 		return Render(c, 200, templates.Index())
 	})
-	e.GET("/artwork", h.GetArtwork)
-}
 
-func (h *Handler) GetArtwork(c echo.Context) error {
-	artAPI := art.NewChicagoAPIClient()
-
-	hasImage := false
-	artwork := &art.Artwork{}
-	for hasImage == false {
-		temp, err := artAPI.GetRandomArtwork()
-		if err != nil {
-			return c.String(500, "Error fetching artwork")
-		}
-		if artwork.ImageURL() != "" {
-			hasImage = true
-		}
-		artwork = temp
-	}
-
-	return Render(c, 200, templates.ArtPanel(artwork))
+	// Art routes
+	art := e.Group("/art")
+	art.GET("", h.RenderPanelArt)
+	art.GET("/api/random", h.GetRandomArtwork)
 }
