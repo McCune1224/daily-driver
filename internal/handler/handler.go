@@ -32,9 +32,18 @@ func (h *Handler) AttachRoutes(e *echo.Echo) {
 
 func (h *Handler) GetArtwork(c echo.Context) error {
 	artAPI := art.NewChicagoAPIClient()
-	artwork, err := artAPI.GetRandomArtwork()
-	if err != nil {
-		return c.String(500, "Error fetching artwork")
+
+	hasImage := false
+	artwork := &art.Artwork{}
+	for hasImage == false {
+		temp, err := artAPI.GetRandomArtwork()
+		if err != nil {
+			return c.String(500, "Error fetching artwork")
+		}
+		if artwork.ImageURL() != "" {
+			hasImage = true
+		}
+		artwork = temp
 	}
 
 	return Render(c, 200, templates.ArtPanel(artwork))
