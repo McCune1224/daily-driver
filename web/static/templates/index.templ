@@ -10,8 +10,11 @@ templ Index() {
 			hx-swap="innerHTML"
 			hx-get="/panel"
 			hx-trigger="load, every 30s"
+					hx-indicator="#loading-indicator"
 			class="htmx-swapping"
 		>
+		<!-- Loading Indicator -->
+		<div id="loading-indicator" class="hidden">Loading...</div>
 			@panel.Panel() {
 				<div id="current-panel" class="h-full"></div>
 			}

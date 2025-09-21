@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// TODO: Add DB stuff?
+// TODO: Add DB stuff...
 type Handler struct {
 	Logger *zap.Logger
 }
@@ -38,6 +38,5 @@ func (h *Handler) AttachRoutes(e *echo.Echo) {
 
 	// Art routes
 	art := e.Group("/art")
-	art.GET("", h.RenderPanelArt)
 	art.GET("/api/random", h.GetRandomArtwork)
 }

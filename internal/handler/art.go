@@ -7,10 +7,6 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func (h *Handler) RenderPanelArt(c echo.Context) error {
-	return Render(c, 200, templates.PanelArt())
-}
-
 func (h *Handler) GetRandomArtwork(c echo.Context) error {
 	artAPI := art.NewChicagoAPIClient()
 

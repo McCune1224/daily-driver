@@ -1,23 +1,6 @@
 package templates
 
 import "daily-driver/internal/api/art"
-import "daily-driver/web/static/templates/panel"
-
-templ PanelArt() {
-	@Base() {
-		<div
-			hx-target="#panel-art"
-			hx-swap="innerHTML"
-			hx-get="/art/api/random"
-			hx-trigger="load, every 15m"
-			hx-indicator=".loading-indicator"
-		></div>
-		<div class="loading-indicator" style="display: none;">Loading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>
-		@panel.Panel() {
-			<div id="panel-art"></div>
-		}
-	}
-}
 
 templ ComponentArtpiece(art *art.Artwork) {
 	<div
