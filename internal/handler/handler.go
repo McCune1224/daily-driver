@@ -5,10 +5,12 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
+	"go.uber.org/zap"
 )
 
 // TODO: Add DB stuff?
 type Handler struct {
+	Logger *zap.Logger
 }
 
 // This custom Render replaces Echo's echo.Context.Render() with templ's templ.Component.Render().
@@ -23,10 +25,16 @@ func Render(ctx echo.Context, statusCode int, t templ.Component) error {
 	return ctx.HTML(statusCode, buf.String())
 }
 
+func (h *Handler) RenderIndex(c echo.Context) error {
+	return Render(c, 200, templates.Index())
+}
+
 func (h *Handler) AttachRoutes(e *echo.Echo) {
-	e.GET("/", func(c echo.Context) error {
-		return Render(c, 200, templates.Index())
-	})
+	e.GET("/", h.RenderIndex)
+
+	// Panel routes
+	panel := e.Group("/panel")
+	panel.GET("", h.RenderPanels)
 
 	// Art routes
 	art := e.Group("/art")
