@@ -3,10 +3,12 @@ package main
 import (
 	handler "daily-driver/internal/handler"
 	"os"
+	"path/filepath"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 const DevPort = "8080"
@@ -19,12 +21,37 @@ func getPort() string {
 	return port
 }
 
+func createLogger() (*zap.Logger, error) {
+	logFile := filepath.Join(".", "application.log")
+	file, err := os.Create(logFile)
+	if err != nil {
+		return nil, err
+	}
+
+	// File logging syncer
+	fileSyncer := zapcore.AddSync(file)
+
+	// Console logging syncer
+	consoleSyncer := zapcore.AddSync(os.Stdout)
+
+	// Encoder configuration
+	encoderConfig := zap.NewDevelopmentEncoderConfig()
+	fileEncoder := zapcore.NewConsoleEncoder(encoderConfig)
+	consoleEncoder := zapcore.NewConsoleEncoder(encoderConfig)
+
+	// Core for file and console logging
+	fileCore := zapcore.NewCore(fileEncoder, fileSyncer, zapcore.DebugLevel)
+	consoleCore := zapcore.NewCore(consoleEncoder, consoleSyncer, zapcore.DebugLevel)
+
+	// Combine cores
+	combinedCore := zapcore.NewTee(fileCore, consoleCore)
+
+	return zap.New(combinedCore, zap.AddStacktrace(zap.FatalLevel)), nil
+}
+
 func main() {
-	// Initialize Zap logger with development (colored) configuration
-	logger, err := zap.NewDevelopment(
-		zap.AddStacktrace(zap.FatalLevel),
-		zap.Development(),
-	) // Enables colored console-friendly logging
+	// Initialize Zap logger to log to both file and standard output
+	logger, err := createLogger()
 	if err != nil {
 		panic("Failed to initialize logger: " + err.Error())
 	}
