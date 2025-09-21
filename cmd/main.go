@@ -28,27 +28,19 @@ func createLogger() (*zap.Logger, error) {
 		return nil, err
 	}
 
-	// File logging syncer
 	fileSyncer := zapcore.AddSync(file)
-
-	// Console logging syncer
 	consoleSyncer := zapcore.AddSync(os.Stdout)
 
-	// Encoder configuration
 	encoderConfig := zap.NewDevelopmentEncoderConfig()
 	fileEncoder := zapcore.NewConsoleEncoder(encoderConfig)
 	consoleEncoder := zapcore.NewConsoleEncoder(encoderConfig)
 
-	// Core for file and console logging
 	fileCore := zapcore.NewCore(fileEncoder, fileSyncer, zapcore.DebugLevel)
 	consoleCore := zapcore.NewCore(consoleEncoder, consoleSyncer, zapcore.DebugLevel)
-
-	// Combine cores
 	combinedCore := zapcore.NewTee(fileCore, consoleCore)
 
 	return zap.New(combinedCore, zap.AddStacktrace(zap.FatalLevel)), nil
 }
-
 func main() {
 	// Initialize Zap logger to log to both file and standard output
 	logger, err := createLogger()

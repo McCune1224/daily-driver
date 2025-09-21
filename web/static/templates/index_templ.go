@@ -43,7 +43,7 @@ func Index() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"panel-root\" hx-target=\"#current-panel\" hx-swap=\"outerHTML\" hx-get=\"/panel\" hx-trigger=\"load, every 5s\" class=\"htmx-swapping\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"panel-root\" hx-target=\"#current-panel\" hx-swap=\"innerHTML\" hx-get=\"/panel\" hx-trigger=\"load, every 30s\" class=\"htmx-swapping\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

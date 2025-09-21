@@ -7,9 +7,9 @@ templ Index() {
 		<div
 			id="panel-root"
 			hx-target="#current-panel"
-			hx-swap="outerHTML"
+			hx-swap="innerHTML"
 			hx-get="/panel"
-			hx-trigger="load, every 5s"
+			hx-trigger="load, every 30s"
 			class="htmx-swapping"
 		>
 			@panel.Panel() {

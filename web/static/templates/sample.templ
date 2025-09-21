@@ -3,8 +3,6 @@ package templates
 import "strconv"
 
 templ Boilerplate(index int) {
-	<div id="current-panel">
-		<h1>Boilerplate</h1>
-		<p>This is a boilerplate template. { strconv.Itoa(index) }</p>
-	</div>
+	<h1>Boilerplate</h1>
+	<p>This is a boilerplate template. { strconv.Itoa(index) }</p>
 }

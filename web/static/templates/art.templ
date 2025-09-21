@@ -10,7 +10,9 @@ templ PanelArt() {
 			hx-swap="innerHTML"
 			hx-get="/art/api/random"
 			hx-trigger="load, every 15m"
+			hx-indicator=".loading-indicator"
 		></div>
+		<div class="loading-indicator" style="display: none;">Loading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>
 		@panel.Panel() {
 			<div id="panel-art"></div>
 		}
@@ -18,9 +20,16 @@ templ PanelArt() {
 }
 
 templ ComponentArtpiece(art *art.Artwork) {
-	<div class="border p-4 rounded shadow hover:shadow-lg transition duration-300">
+	<div
+		style="animation: fadeIn 1s;"
+		class="border p-4 rounded shadow hover:shadow-lg transition duration-300"
+	>
 		<h2 class="text-xl font-semibold mb-2">{ art.Title }</h2>
 		<p class="text-gray-600 mb-4">{ art.ArtistDisplay }</p>
-		<img src={ art.ImageURL() } alt={ art.Title } class="w-full h-auto"/>
+		<img
+			src={ art.ImageURL() }
+			alt={ art.Title }
+			class="w-full h-auto"
+		/>
 	</div>
 }

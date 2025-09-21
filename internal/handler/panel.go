@@ -8,15 +8,13 @@ import (
 	"go.uber.org/zap"
 )
 
-const PanelRotationIntervalSeconds = 5
+const PanelRotationIntervalSeconds = 30
 
 func (h *Handler) RenderPanels(c echo.Context) error {
 	// Define panel options
 	panelOptions := []func(echo.Context) error{
 		func(c echo.Context) error { return Render(c, 200, templates.Boilerplate(0)) },
-		func(c echo.Context) error { return Render(c, 200, templates.Boilerplate(1)) },
-		func(c echo.Context) error { return Render(c, 200, templates.Boilerplate(2)) },
-		func(c echo.Context) error { return Render(c, 200, templates.Boilerplate(3)) },
+		func(c echo.Context) error { return h.RenderPanelArt(c) },
 	}
 
 	// Determine the current panel index based on time
