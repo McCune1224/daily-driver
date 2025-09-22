@@ -5,6 +5,8 @@ templ Panel(children ...templ.Component) {
 		id="current-panel"
 		class="border shadow-2xl bg-orange-50 p-4 max-w-4xl mx-auto h-screen"
 	>
-		{ children... }
+		<div id="panel-fade">
+			{ children... }
+		</div>
 	</div>
 }

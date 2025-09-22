@@ -43,7 +43,7 @@ func Index() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"panel-root\" hx-target=\"#current-panel\" hx-swap=\"innerHTML\" hx-get=\"/panel\" hx-trigger=\"load, every 30s\" hx-indicator=\"#loading-indicator\" class=\"htmx-swapping\"></div><!-- Loading Indicator --> <div id=\"loading-indicator\" class=\"hidden\">Loading...</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"panel-root\" hx-target=\"#current-panel\" hx-swap=\"innerHTML\" hx-get=\"/panel\" hx-trigger=\"load, every 3s\" hx-indicator=\"#loading-indicator\" class=\"htmx-swapping\"></div><div id=\"loading-indicator\" style=\"display:none; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); padding:8px 16px; background:#fff; border-radius:8px; font-size:1.2em; box-shadow:0 2px 6px rgba(0,0,0,0.1); z-index:1000;\"><span id=\"loading-text\">loading</span><span id=\"loading-dots\"></span></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -59,10 +59,6 @@ func Index() templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div id=\"current-panel\" class=\"h-full\"></div>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
 				return nil
 			})
 			templ_7745c5c3_Err = panel.Panel().Render(templ.WithChildren(ctx, templ_7745c5c3_Var3), templ_7745c5c3_Buffer)
