@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"daily-driver/web/static/templates"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -12,8 +13,9 @@ const PanelRotationIntervalSeconds = 30
 func (h *Handler) RenderPanels(c echo.Context) error {
 	// Define panel options
 	panelOptions := []func(echo.Context) error{
-		// func(c echo.Context) error { return Render(c, 200, templates.Boilerplate(0)) },
-		func(c echo.Context) error { return h.GetRandomArtwork(c) },
+		func(c echo.Context) error { return Render(c, 200, templates.Boilerplate(0)) },
+		func(c echo.Context) error { return Render(c, 200, templates.Boilerplate(1)) },
+		// func(c echo.Context) error { return h.GetRandomArtwork(c) },
 	}
 
 	// Determine the current panel index based on time

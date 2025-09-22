@@ -43,7 +43,7 @@ func Index() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"panel-root\" hx-target=\"#current-panel\" hx-swap=\"innerHTML\" hx-get=\"/panel\" hx-trigger=\"load, every 30s\" hx-indicator=\"#loading-indicator\" class=\"htmx-swapping\"><!-- Loading Indicator --><div id=\"loading-indicator\" class=\"hidden\">Loading...</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"panel-root\" hx-target=\"#current-panel\" hx-swap=\"innerHTML\" hx-get=\"/panel\" hx-trigger=\"load, every 30s\" hx-indicator=\"#loading-indicator\" class=\"htmx-swapping\"></div><!-- Loading Indicator --> <div id=\"loading-indicator\" class=\"hidden\">Loading...</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -66,10 +66,6 @@ func Index() templ.Component {
 				return nil
 			})
 			templ_7745c5c3_Err = panel.Panel().Render(templ.WithChildren(ctx, templ_7745c5c3_Var3), templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

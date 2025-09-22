@@ -1,7 +1,10 @@
 package panel
 
 templ Panel(children ...templ.Component) {
-	<div class="p-4 max-w-4xl mx-auto bg-white shadow-md h-screen">
+	<div
+		id="current-panel"
+		class="border shadow-2xl bg-orange-50 p-4 max-w-4xl mx-auto h-screen"
+	>
 		{ children... }
 	</div>
 }
