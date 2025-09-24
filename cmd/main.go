@@ -1,10 +1,12 @@
 package main
 
 import (
+	"context"
 	handler "daily-driver/internal/handler"
 	"os"
 	"path/filepath"
 
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"go.uber.org/zap"
@@ -19,6 +21,14 @@ func getPort() string {
 		return DevPort
 	}
 	return port
+}
+
+func createDBPool() (*pgxpool.Pool, error) {
+	pool, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
+	if err != nil {
+		return nil, err
+	}
+	return pool, nil
 }
 
 func createLogger() (*zap.Logger, error) {
@@ -41,6 +51,7 @@ func createLogger() (*zap.Logger, error) {
 
 	return zap.New(combinedCore, zap.AddStacktrace(zap.FatalLevel)), nil
 }
+
 func main() {
 	// Initialize Zap logger to log to both file and standard output
 	logger, err := createLogger()
@@ -62,14 +73,19 @@ func main() {
 			return next(c)
 		}
 	})
-
 	app.Use(middleware.Recover())
-
 	app.Static("/static", "web/static")
+
+	dbPool, err := createDBPool()
+	if err != nil {
+		logger.Panic("Failed to create database pool: " + err.Error())
+	}
 
 	handler := &handler.Handler{
 		Logger: logger,
+		DBPool: dbPool,
 	}
+
 	handler.AttachRoutes(app)
 	app.Logger.Fatal(app.Start(":" + getPort()))
 }

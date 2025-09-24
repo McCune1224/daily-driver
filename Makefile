@@ -14,3 +14,4 @@ templ:
 build:
 	tailwindcss -i ./web/static/css/input.css -o ./web/static/css/output.css --minify
 	templ generate
+	sqlc generate

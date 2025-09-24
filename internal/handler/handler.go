@@ -4,6 +4,7 @@ import (
 	"daily-driver/web/static/templates"
 
 	"github.com/a-h/templ"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
 )
@@ -11,6 +12,8 @@ import (
 // TODO: Add DB stuff...
 type Handler struct {
 	Logger *zap.Logger
+	DBPool *pgxpool.Pool
+	// GarminData []*proto.FIT
 }
 
 // This custom Render replaces Echo's echo.Context.Render() with templ's templ.Component.Render().

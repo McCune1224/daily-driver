@@ -5,11 +5,11 @@ tmp_dir = "tmp"
 [build]
   args_bin = []
   bin = "./tmp/main"
-  cmd = "templ generate --notify-proxy && go build -o ./tmp/main ./cmd"
+  cmd = "sqlc generate && templ generate --notify-proxy && go build -o ./tmp/main ./cmd"
   # cmd = "go build -o ./tmp/main ./cmd"
 
   delay = 1000
-  exclude_dir = ["assets", "tmp", "vendor", "testdata"]
+  exclude_dir = ["assets", "tmp", "vendor", "testdata", "internal/db"]
   exclude_file = []
   exclude_regex = ["_test.go"]
   exclude_unchanged = false
