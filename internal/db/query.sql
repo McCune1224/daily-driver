@@ -1,26 +1,47 @@
 -- name: GetGarminFitFileByID :one
-SELECT * FROM garmin_fit_files
-WHERE id = $1;
+select *
+from garmin_fit_files
+where id = $1
+;
 
--- name: ListGarminFitFilesByUser :many
-SELECT * FROM garmin_fit_files
-WHERE user_id = $1
-ORDER BY uploaded_at DESC;
 
 -- name: GetGarminFitFileByFilename :one
-SELECT * FROM garmin_fit_files
-WHERE filename = $1;
+select *
+from garmin_fit_files
+where filename = $1
+;
 
 -- name: SearchGarminFitFilesByFilename :many
-SELECT * FROM garmin_fit_files
-WHERE filename ILIKE '%' || $1 || '%'
-ORDER BY uploaded_at DESC;
+select *
+from garmin_fit_files
+where filename ilike '%' || $1 || '%'
+order by uploaded_at desc
+;
 
 -- name: ListGarminFitFilesByDateRange :many
-SELECT * FROM garmin_fit_files
-WHERE uploaded_at BETWEEN $1 AND $2
-ORDER BY uploaded_at DESC;
+select *
+from garmin_fit_files
+where uploaded_at between $1 and $2
+order by uploaded_at desc
+;
 
 -- name: ListGarminFilenames :many
-SELECT filename FROM garmin_fit_files
-ORDER BY uploaded_at DESC;
+select filename
+from garmin_fit_files
+order by uploaded_at desc
+;
+
+-- name: ListGarminFilesByFileCategory :many
+select *
+from garmin_fit_files
+where file_category = $1
+;
+
+
+-- name: InsertGarminFitFile :one
+insert into garmin_fit_files 
+(filename, data, file_category)
+values ($1, $2, $3)
+returning *
+;
+

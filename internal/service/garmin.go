@@ -21,3 +21,6 @@ func DecodeGarminActivity(filepath string) (*proto.FIT, error) {
 	}
 	return fit, nil
 }
+
+func UploadGarminFile(filepath string) {
+}

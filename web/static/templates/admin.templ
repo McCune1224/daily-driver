@@ -1,0 +1,35 @@
+package templates
+
+import "daily-driver/internal/db"
+
+templ Admin(files []db.GarminFitFile) {
+	@Base() {
+		<div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+			<h1>
+				Admin Stuff
+			</h1>
+			// Form to upload garmin files:
+			<form
+				class="mt-4 flex items-center gap-2"
+				hx-post="/admin/upload/garmin"
+				hx-target="#upload-result"
+				hx-swap="innerHTML"
+				enctype="multipart/form-data"
+			>
+				<input type="file" name="file"/>
+				<button
+					type="submit"
+					class="text-white bg-orange-600 p-2 hover:bg-orange-700 "
+				>Upload Garmin File</button>
+			</form>
+			<div id="upload-result" class="mt-4"></div>
+		</div>
+	}
+	<ul>
+		for _, item := range files {
+			<li>{ item.Filename }</li>
+			<li>{ item.FileCategory.GarminFileCategory }</li>
+			<li>{ len(item.Data) } total bytes</li>
+		}
+	</ul>
+}
