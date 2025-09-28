@@ -1,12 +1,11 @@
 package panel
 
 templ Panel(children ...templ.Component) {
-	<div
-		id="current-panel"
-		class="border shadow-2xl bg-orange-50 p-4 max-w-4xl mx-auto h-screen"
-	>
-		<div id="panel-fade">
-			{ children... }
+	<div class="h-screen flex flex-col justify-center">
+		<div id="current-panel" class="h-[95%] border border-y-4 border-x-2 shadow-2xl bg-orange-50 p-4 mx-auto w-11/12">
+			<div id="panel-fade">
+				{ children... }
+			</div>
 		</div>
 	</div>
 }

@@ -18,7 +18,6 @@ func (h *Handler) RenderPanels(c echo.Context) error {
 		// func(c echo.Context) error { return h.GetRandomArtwork(c) },
 	}
 
-	// Determine the current panel index based on time
 	numPanels := len(panelOptions) // Total number of panels available
 	if numPanels == 0 {
 		return c.String(500, "No panels available for rotation")

@@ -43,25 +43,11 @@ func Index() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"panel-root\" hx-target=\"#current-panel\" hx-swap=\"innerHTML\" hx-get=\"/panel\" hx-trigger=\"load, every 3s\" hx-indicator=\"#loading-indicator\" class=\"htmx-swapping\"></div><div id=\"loading-indicator\" style=\"display:none; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); padding:8px 16px; background:#fff; border-radius:8px; font-size:1.2em; box-shadow:0 2px 6px rgba(0,0,0,0.1); z-index:1000;\"><span id=\"loading-text\">loading</span><span id=\"loading-dots\"></span></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"panel-root\" hx-target=\"#current-panel\" hx-swap=\"innerHTML\" hx-get=\"/panel\" hx-trigger=\"load, every 3s\"></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Var3 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-				if !templ_7745c5c3_IsBuffer {
-					defer func() {
-						templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-						if templ_7745c5c3_Err == nil {
-							templ_7745c5c3_Err = templ_7745c5c3_BufErr
-						}
-					}()
-				}
-				ctx = templ.InitializeContext(ctx)
-				return nil
-			})
-			templ_7745c5c3_Err = panel.Panel().Render(templ.WithChildren(ctx, templ_7745c5c3_Var3), templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = panel.Panel().Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
