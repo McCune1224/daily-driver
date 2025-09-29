@@ -5,31 +5,52 @@ import "daily-driver/internal/db"
 templ Admin(files []db.GarminFitFile) {
 	@Base() {
 		<div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
-			<h1>
-				Admin Stuff
+			<h1 class="text-lg font-bold mb-4">
+				Admin - Uploaded Garmin Files
 			</h1>
-			// Form to upload garmin files:
+			<div class="mb-6">
+				<strong>Total Files:</strong> { len(files) }
+			</div>
+			// Form to upload garmin folder:
 			<form
-				class="mt-4 flex items-center gap-2"
+				class="mt-4 flex items-center gap-4 from-orange-200 via-orange-100 to-orange-50 p-4 rounded-lg shadow-md hover:shadow-xl"
 				hx-post="/admin/upload/garmin"
 				hx-target="#upload-result"
 				hx-swap="innerHTML"
 				enctype="multipart/form-data"
 			>
-				<input type="file" name="file"/>
+				//<input type="file" name="file" multiple/>
+				<input type="file" name="file" id="files" multiple class="hidden"/>
+				<label
+					class="cursor-pointer bg-orange-400 text-white p-2 hover:bg-orange-600 "
+					for="files"
+				>Select file(s)</label>
 				<button
 					type="submit"
-					class="text-white bg-orange-600 p-2 hover:bg-orange-700 "
+					class="text-white bg-orange-400 p-2 hover:bg-orange-600"
 				>Upload Garmin File</button>
 			</form>
 			<div id="upload-result" class="mt-4"></div>
 		</div>
+		<div class="overflow-x-auto">
+			<table class="table-auto w-full border-collapse border border-gray-300">
+				<thead>
+					<tr class="bg-gray-100">
+						<th class="border border-gray-400 px-4 py-2">Filename</th>
+						<th class="border border-gray-400 px-4 py-2">Category</th>
+						<th class="border border-gray-400 px-4 py-2">Size (KB)</th>
+					</tr>
+				</thead>
+				<tbody>
+					for _, item := range files {
+						<tr>
+							<td class="border border-gray-300 px-4 py-2">{ item.Filename }</td>
+							<td class="border border-gray-300 px-4 py-2">{ item.FileCategory.GarminFileCategory }</td>
+							<td class="border border-gray-300 px-4 py-2">{ len(item.Data) / 1024 }</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
 	}
-	<ul>
-		for _, item := range files {
-			<li>{ item.Filename }</li>
-			<li>{ item.FileCategory.GarminFileCategory }</li>
-			<li>{ len(item.Data) } total bytes</li>
-		}
-	</ul>
 }
