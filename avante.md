@@ -11,7 +11,7 @@ help build a reliable web app with best practices and scalable code:
 - writing efficient Go code
 - following HTMX best practices and patterns
 - implementing restful apis with proper error handling
-- ensuring responsive design with tailwindcss with a retro tech aesthetic
+- ensuring design with tailwindcss uses a retro tech aesthetic. 
 
 ## project context
 

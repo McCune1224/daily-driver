@@ -1,26 +1,23 @@
 package service
 
 import (
-	"os"
+	"bytes"
+	"daily-driver/internal/db"
 
 	"github.com/muktihari/fit/decoder"
-	"github.com/muktihari/fit/proto"
+	"github.com/muktihari/fit/profile/filedef"
 )
 
-func DecodeGarminActivity(filepath string) (*proto.FIT, error) {
-	f, err := os.Open(filepath)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-
-	garminDecoder := decoder.New(f)
+func DecodeGarminActivity(file *db.GarminFitFile) (*filedef.Activity, *filedef.ActivitySummary, error) {
+	reader := bytes.NewReader(file.Data)
+	garminDecoder := decoder.New(reader)
 	fit, err := garminDecoder.Decode()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return fit, nil
-}
 
-func UploadGarminFile(filepath string) {
+	activity := filedef.NewActivity(fit.Messages...)
+	summary := filedef.NewActivitySummary(fit.Messages...)
+	return activity, summary, nil
+
 }

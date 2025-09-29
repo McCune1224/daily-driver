@@ -1,25 +1,53 @@
-package internal
+package handler
 
 import (
 	"daily-driver/internal/db"
 	"daily-driver/web/static/templates"
 	"io"
+	"strconv"
 	"strings"
 
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
 )
 
-func (h *Handler) RenderAdmin(c echo.Context) error {
+func (h *Handler) RenderPanelGarmin(c echo.Context) error {
+	pageStr := c.QueryParam("page")
+	page := 1
+	if pageStr != "" {
+		if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
+			page = p
+		}
+	}
+	const limit = 10
+	offset := (page - 1) * limit
+
 	q := db.New(h.DBPool)
-	garminFiles, err := q.ListGarminFilesByFileCategory(c.Request().Context(), db.NullGarminFileCategory{Valid: true, GarminFileCategory: db.GarminFileCategoryActivity})
+	files, err := q.ListGarminFilesPaginated(c.Request().Context(), db.ListGarminFilesPaginatedParams{
+		Limit:  int32(limit),
+		Offset: int32(offset),
+	})
 	if err != nil {
 		h.Logger.Error("Failed to get garmin fit files", zap.Error(err))
 		return c.String(500, "Failed to get garmin fit files")
 	}
 
-	return Render(c, 200, templates.Admin(garminFiles))
+	total, err := q.CountGarminFiles(c.Request().Context())
+	if err != nil {
+		h.Logger.Error("Failed to count garmin fit files", zap.Error(err))
+		return c.String(500, "Failed to count garmin fit files")
+	}
+
+	totalPages := (total + int64(limit) - 1) / int64(limit)
+
+	return Render(c, 200, templates.Admin(files, page, int(totalPages), total))
 }
+
+// func (h *Handler) GetGarminData(c echo.Context) error {
+// 	q := db.New(h.DBPool)
+//
+// 	q.GetGarminFitFileByID(c.Request().Context(), 1)
+// }
 
 func (h *Handler) UploadGarminFile(c echo.Context) error {
 	// grab the file from the multipart/form-data

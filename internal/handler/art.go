@@ -1,4 +1,4 @@
-package internal
+package handler
 
 import (
 	"daily-driver/internal/api/art"
@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func (h *Handler) GetRandomArtwork(c echo.Context) error {
+func (h *Handler) RenderPanelArtwork(c echo.Context) error {
 	artAPI := art.NewChicagoAPIClient()
 
 	hasImage := false

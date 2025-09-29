@@ -38,6 +38,18 @@ where file_category = $1
 ;
 
 
+-- name: ListGarminFilesPaginated :many
+select *
+from garmin_fit_files
+order by uploaded_at desc
+limit $1 offset $2
+;
+
+-- name: CountGarminFiles :one
+select count(*) from garmin_fit_files
+;
+
+
 -- name: InsertGarminFitFile :one
 insert into garmin_fit_files 
 (filename, data, file_category)
