@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"daily-driver/internal/routes"
 	"daily-driver/web/static/templates"
 
 	"github.com/a-h/templ"
@@ -35,14 +36,9 @@ func (h *Handler) RenderIndex(c echo.Context) error {
 func (h *Handler) AttachRoutes(e *echo.Echo) {
 	e.GET(routes.Root, h.RenderIndex)
 
-	// Admin routes
-	admin := e.Group(routes.AdminBase)
-	admin.GET("", h.RenderPanelGarmin)
-	admin.POST(routes.AdminUploadGarmin, h.UploadGarminFile)
-	// admin.GET("/garmin-data", h.GetGarminData)
-
-	// garmin := e.Group("/garmin")
-	// garmin.GET("/data", h.GetGarminData())
+	garmin := e.Group(routes.GarminBase)
+	garmin.GET("", h.RenderPanelGarmin)
+	garmin.POST(routes.GarminUpload, h.UploadGarminFile)
 
 	// Panel routes
 	panel := e.Group(routes.PanelBase)
