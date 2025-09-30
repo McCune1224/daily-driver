@@ -1,59 +1,271 @@
 package panel
 
-templ PanelWeather() {
-	<div class="border-2 border-primary/50 bg-card p-8 md:p-12">
+import (
+	"daily-driver/internal/api/weather"
+	"fmt"
+	"strings"
+	"time"
+)
+
+// formatTimeLocal attempts to parse various common time formats and returns a human-friendly time string like "Today at 4:03 PM".
+// formatTimeLocal returns a friendly string like "Today at 4:03 PM CDT", "Tomorrow at 7:00 AM CST", or "Monday at 5:45 PM".
+func formatTimeLocal(s string) string {
+	if s == "" {
+		return "N/A"
+	}
+	var t time.Time
+	var err error
+	if t, err = time.Parse(time.RFC3339, s); err != nil {
+		t, err = time.Parse("2006-01-02 15:04", s)
+		if err != nil {
+			t, err = time.Parse("2006-01-02", s)
+			if err != nil {
+				return s
+			}
+		}
+	}
+	now := time.Now().Local()
+	date := t.Local()
+	format := "3:04 PM MST" // 12-hour format + timezone
+	label := ""
+
+	// Compare only date portion
+	y1, m1, d1 := now.Date()
+	y2, m2, d2 := date.Date()
+	daysDiff := int(date.Sub(time.Date(y1, m1, d1, 0, 0, 0, 0, date.Location())).Hours() / 24)
+
+	switch {
+	case y1 == y2 && m1 == m2 && d1 == d2:
+		label = "Today"
+	case daysDiff == 1:
+		label = "Tomorrow"
+	case daysDiff == -1:
+		label = "Yesterday"
+	default:
+		label = date.Format("Monday")
+	}
+
+	// If timezone is UTC, omit it for brevity
+	tz := date.Format("MST")
+	if tz == "UTC" {
+		return label + " at " + date.Format("3:04 PM")
+	}
+	return label + " at " + date.Format(format)
+}
+
+// formatDateLocal attempts to parse a date/time and returns an uppercase short date like MON, JAN 2.
+func formatDateLocal(s string) string {
+	if s == "" {
+		return "N/A"
+	}
+	if t, err := time.Parse(time.RFC3339, s); err == nil {
+		return strings.ToUpper(t.Local().Format("Mon, Jan 2"))
+	}
+	if t, err := time.Parse("2006-01-02", s); err == nil {
+		return strings.ToUpper(t.Local().Format("Mon, Jan 2"))
+	}
+	return strings.ToUpper(s)
+}
+
+// weatherCodeLabel maps WMO weather codes to readable labels.
+func weatherCodeLabel(code int) string {
+	switch code {
+	case 0:
+		return "CLEAR"
+	case 1:
+		return "MAINLY_CLEAR"
+	case 2:
+		return "PARTLY_CLOUDY"
+	case 3:
+		return "OVERCAST"
+	case 45, 48:
+		return "FOG"
+	case 51, 53, 55:
+		return "DRIZZLE"
+	case 56, 57:
+		return "FREEZING_DRIZZLE"
+	case 61, 63, 65:
+		return "RAIN"
+	case 66, 67:
+		return "FREEZING_RAIN"
+	case 71, 73, 75:
+		return "SNOW"
+	case 77:
+		return "SNOW_GRAINS"
+	case 80, 81, 82:
+		return "RAIN_SHOWERS"
+	case 85, 86:
+		return "SNOW_SHOWERS"
+	case 95:
+		return "THUNDERSTORM"
+	case 96, 99:
+		return "THUNDERSTORM_HAIL"
+	default:
+		return fmt.Sprintf("WMO_%d", code)
+	}
+}
+
+// degToCompass converts degrees to a 16-point compass direction label.
+func degToCompass(deg float64) string {
+	dirs := []string{"N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"}
+	for deg < 0 {
+		deg += 360
+	}
+	for deg >= 360 {
+		deg -= 360
+	}
+	idx := int((deg+11.25)/22.5) % len(dirs)
+	return dirs[idx]
+}
+
+templ PanelWeather(response *weather.APIResponse) {
+	<div class="border-2 border-primary/50 bg-white p-8 md:p-12">
 		<div class="mb-8 flex items-center gap-3">
-			<div class="h-1 w-12 bg-secondary"></div>
+			<div class="h-1 w-12 bg-black"></div>
 			<h3 class="font-mono text-lg text-secondary">WEATHER_DATETIME.SYS</h3>
 		</div>
 		<div class="grid gap-8 md:grid-cols-2">
 			<div class="space-y-6">
 				<div>
-					<div class="mb-2 font-mono text-xs text-muted-foreground">CURRENT_TIME</div>
-					<div class="font-mono text-5xl font-bold tabular-nums text-primary">14:23:45</div>
-				</div>
-				<div>
-					<div class="mb-2 font-mono text-xs text-muted-foreground">CURRENT_DATE</div>
-					<div class="font-mono text-lg text-foreground">Monday, June 10, 2024</div>
-				</div>
-				<div class="flex items-center gap-2 pt-4">
-					<div class="h-2 w-2 animate-pulse rounded-full bg-primary"></div>
-					<div class="font-mono text-xs text-muted-foreground">SYSTEM_TIME_SYNC</div>
-				</div>
-			</div>
-			<div class="space-y-6">
-				<div>
-					<div class="mb-2 font-mono text-xs text-muted-foreground">TEMPERATURE</div>
-					<div class="font-mono text-5xl font-bold text-secondary">
-						18°<span class="ml-2 text-2xl text-muted-foreground">C</span>
+					<div class="mb-2 font-mono text-xs text-muted-foreground">LAST_UPDATED</div>
+					<div class="font-mono text-5xl font-bold tabular-nums text-primary">
+						if response != nil {
+							{ time.Now().Local().Format("15:04:05") }
+						} else {
+							N/A
+						}
 					</div>
 				</div>
 				<div>
-					<div class="mb-2 font-mono text-xs text-muted-foreground">CONDITIONS</div>
-					<div class="font-mono text-lg text-foreground">PARTLY_CLOUDY</div>
+					<div class="mb-2 font-mono text-xs text-muted-foreground">CURRENT_DATE</div>
+					<div class="font-mono text-lg text-foreground">
+						if response != nil {
+							{ formatDateLocal(response.Current.Time) }
+						} else {
+							N/A
+						}
+					</div>
 				</div>
-				<div class="grid grid-cols-3 gap-4 pt-4">
+			</div>
+			<div class="space-y-4">
+				<div>
+					<div class="mb-2 font-mono text-xs text-muted-foreground">TEMPERATURE</div>
+					<div class="font-mono text-5xl font-bold text-secondary">
+						if response != nil {
+							{ fmt.Sprintf("%.0f°", response.Current.Temperature) }
+							<span class="ml-2 text-2xl text-muted-foreground">{ strings.ToUpper(strings.ReplaceAll(response.Units.Temperature, "°", "")) }</span>
+						} else {
+							N/A
+						}
+					</div>
+					<div class="mt-1 font-mono text-xs text-muted-foreground italic">
+						if response != nil {
+							(Feels like { fmt.Sprintf("%.0f°", response.Current.ApparentTemp) })
+						}
+					</div>
+				</div>
+				<div class="grid grid-cols-3 gap-4 pt-2">
 					<div>
 						<div class="mb-1 font-mono text-xs text-muted-foreground">HUMIDITY</div>
-						<div class="font-mono text-xl font-bold text-foreground">65%</div>
+						<div class="font-mono text-xl font-bold text-foreground">
+							if response != nil {
+								{ fmt.Sprintf("%.0f%%", response.Current.Humidity) }
+							} else {
+								N/A
+							}
+						</div>
 					</div>
 					<div>
 						<div class="mb-1 font-mono text-xs text-muted-foreground">WIND</div>
 						<div class="font-mono text-xl font-bold text-foreground">
-							12<span class="ml-1 text-xs">KM/H</span>
+							if response != nil {
+								{ fmt.Sprintf("%.0f", response.Current.WindSpeed) }
+								<span class="ml-1 text-xs">{ strings.ToUpper(response.Units.WindSpeed) }</span>
+								<span class="ml-2 text-xs">{ degToCompass(response.Current.WindDirection) }</span>
+								if response.Current.WindGusts > 0 {
+									<span class="ml-2 text-xs text-muted-foreground">G { fmt.Sprintf("%.0f", response.Current.WindGusts) }</span>
+								}
+							} else {
+								N/A
+							}
 						</div>
 					</div>
 					<div>
 						<div class="mb-1 font-mono text-xs text-muted-foreground">PRESSURE</div>
-						<div class="font-mono text-xl font-bold text-foreground">1013</div>
+						<div class="font-mono text-xl font-bold text-foreground">
+							if response != nil {
+								{ fmt.Sprintf("%.0f", response.Current.Pressure) }
+								<span class="ml-1 text-xs">{ strings.ToUpper(response.Units.Pressure) }</span>
+							} else {
+								N/A
+							}
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
+		<div class="mt-8">
+			if response != nil && len(response.Daily) > 0 {
+				<div class="grid gap-6 md:grid-cols-4">
+					<div>
+						<div class="mb-1 font-mono text-xs text-muted-foreground">HIGH_LOW</div>
+						<div class="font-mono text-xl font-bold text-foreground">
+							{ fmt.Sprintf("%.0f° / %.0f°", response.Daily[0].TempMax, response.Daily[0].TempMin) }
+							<span class="ml-1 text-xs">{ strings.ToUpper(strings.ReplaceAll(response.Units.Temperature, "°", "")) }</span>
+						</div>
+					</div>
+					<div>
+						<div class="mb-1 font-mono text-xs text-muted-foreground">PRECIP / CLOUDS</div>
+						<div class="font-mono text-xl font-bold text-foreground">
+							{ fmt.Sprintf("%.1f", response.Current.Precipitation) }
+							<span class="ml-1 text-xs">{ strings.ToUpper(response.Units.Precipitation) }</span>
+							<span class="ml-3 font-normal text-muted-foreground">/</span>
+							<span class="ml-3">{ fmt.Sprintf("%.0f%%", response.Current.CloudCover) }</span>
+						</div>
+					</div>
+					<div>
+						<div class="mb-1 font-mono text-xs text-muted-foreground">SUNRISE / SUNSET</div>
+						<div class="font-mono text-xl font-bold text-foreground">
+							{ formatTimeLocal(response.Daily[0].Sunrise) }
+							<span class="mx-2 font-normal text-muted-foreground">/</span>
+							{ formatTimeLocal(response.Daily[0].Sunset) }
+						</div>
+					</div>
+					<div>
+						<div class="mb-1 font-mono text-xs text-muted-foreground">UV_INDEX</div>
+						<div class="font-mono text-xl font-bold text-foreground">
+							{ fmt.Sprintf("%.0f", response.Daily[0].UVIndexMax) }
+						</div>
+					</div>
+				</div>
+			} else {
+				<div class="font-mono text-sm text-muted-foreground">N/A</div>
+			}
+		</div>
 		<div class="mt-8 border-t border-primary/30 pt-6">
 			<div class="flex items-center justify-between font-mono text-xs text-muted-foreground">
-				<span>LOCATION: SAN_FRANCISCO_CA</span>
-				<span>LAT: 37.7749 LONG: -122.4194</span>
+				<span>
+					LOCATION:
+					if response != nil {
+						{ strings.ToUpper(strings.ReplaceAll(strings.TrimSpace(response.Location.Name), ", ", "_")) }
+					} else {
+						N/A
+					}
+				</span>
+				<span>
+					LAT:
+					if response != nil {
+						{ fmt.Sprintf("%.4f", response.Location.Latitude) }
+					} else {
+						N/A
+					}
+					LONG:
+					if response != nil {
+						{ fmt.Sprintf("%.4f", response.Location.Longitude) }
+					} else {
+						N/A
+					}
+				</span>
 			</div>
 		</div>
 	</div>

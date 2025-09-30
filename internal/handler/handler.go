@@ -35,9 +35,10 @@ func (h *Handler) RenderIndex(c echo.Context) error {
 
 func (h *Handler) AttachRoutes(e *echo.Echo) {
 	e.GET(routes.Root, h.RenderIndex)
+	e.GET(routes.WeatherAPI, h.RenderPanelWeather)
 
 	garmin := e.Group(routes.GarminBase)
-	garmin.GET("", h.RenderPanelGarmin)
+	garmin.GET("", h.RenderGarminUploadPage)
 	garmin.POST(routes.GarminUpload, h.UploadGarminFile)
 
 	// Panel routes

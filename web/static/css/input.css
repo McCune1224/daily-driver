@@ -9,13 +9,13 @@
   font-family: 'Geist Mono', 'Fira Mono', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', monospace;
 }
 
-
-
 :root {
-  --primary: 222 84% 56%;
-  /* Primary of green / retro green:*/
-  /* --secondary: 140 70% 40%; */
+  --primary: hsl(30, 40%, 40%);
+  --secondary: hsl(20, 50%, 35%);
+  --third: hsl(40, 30%, 45%);
 }
+
+
 
 @layer utilities {
   .border-primary {
@@ -59,7 +59,6 @@
 /*   background-size: 50px 50px; */
 /* } */
 
-/* Fixing duplicate slow-pulse keyframes */
 @keyframes slow-pulse {
 
   0%,

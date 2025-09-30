@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func (h *Handler) RenderPanelGarmin(c echo.Context) error {
+func (h *Handler) RenderGarminUploadPage(c echo.Context) error {
 	pageStr := c.QueryParam("page")
 	page := 1
 	if pageStr != "" {
@@ -43,11 +43,9 @@ func (h *Handler) RenderPanelGarmin(c echo.Context) error {
 	return Render(c, 200, templates.Admin(files, page, int(totalPages), total))
 }
 
-// func (h *Handler) GetGarminData(c echo.Context) error {
-// 	q := db.New(h.DBPool)
-//
-// 	q.GetGarminFitFileByID(c.Request().Context(), 1)
-// }
+func (h *Handler) RenderGarminPanel(c echo.Context) error {
+	return Render(c, 200, templates.PanelGarmin(1))
+}
 
 func (h *Handler) UploadGarminFile(c echo.Context) error {
 	// grab the file from the multipart/form-data

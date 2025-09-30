@@ -1,6 +1,9 @@
 package templates
 
 import "daily-driver/web/static/templates/panel"
+import "daily-driver/internal/routes"
+import "strconv"
+import "fmt"
 
 templ Index() {
 	@Base() {
@@ -9,7 +12,7 @@ templ Index() {
 			hx-target="#current-panel"
 			hx-swap="innerHTML"
 			hx-get="/panel"
-			hx-trigger="load, every 10s"
+			hx-trigger={ fmt.Sprintf("load, every %ss", strconv.Itoa(routes.PanelRotationIntervalSeconds)) }
 		></div>
 		@panel.PanelManager()
 	}

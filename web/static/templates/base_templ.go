@@ -29,7 +29,7 @@ func Base(children ...templ.Component) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link rel=\"stylesheet\" href=\"static/css/output.css\"><link rel=\"stylesheet\" href=\"static/css/panel-transitions.css\"><script src=\"static/js/htmx.js\"></script></head><body class=\"font-mono\"><main class=\"min-h-screen bg-background scanline-effect\"><div class=\"grid-bg min-h-screen\"><div class=\"container mx-auto px-4 py-12 md:py-20\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link rel=\"stylesheet\" href=\"static/css/output.css\"><script src=\"static/js/htmx.js\"></script></head><body class=\"font-mono\"><main class=\"min-h-screen bg-background scanline-effect\"><div class=\"grid-bg min-h-screen\"><div class=\"container mx-auto px-4 py-12 md:py-20\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
