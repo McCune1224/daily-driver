@@ -1,11 +1,38 @@
 package panel
 
-templ Panel(children ...templ.Component) {
-	<div class="h-screen flex flex-col justify-center">
-		<div id="current-panel" class="h-[95%] border border-y-4 border-x-2 shadow-2xl bg-orange-50 p-4 mx-auto w-11/12">
-			<div id="panel-fade">
-				{ children... }
-			</div>
+templ PanelManager(children ...templ.Component) {
+	<div class="mx-auto max-w-5xl">
+		<div class="mb-8 flex items-center justify-between">
+			<h2 class="font-mono text-sm text-muted-foreground">{ ">" } SYSTEM_MONITOR </h2>
+			@PanelIndexDisplay(3, 1)
 		</div>
+		<div id="current-panel" class="transition-opacity duration-300 opacity-100">
+			<!-- Panel content goes here -->
+			{ children... }
+		</div>
+		<div class="mt-8 flex items-center justify-center gap-4">
+			<div class="font-mono text-md text-white bg-black p-4">PANEL 1/3</div>
+			//<div class="h-px w-32 bg-primary/30"></div>
+			//<div class="font-mono text-xs text-primary">AUTO_ROTATE: 5s</div>
+		</div>
+	</div>
+}
+
+templ CurrentPanelBar() {
+	<div class="mb-4 flex items-center justify-between">
+		<h3 class="font-mono text-sm text-muted-foreground">{ ">" } CURRENT_PANEL </h3>
+		<span class="font-mono text-xs text-primary">UPDATING: 3s</span>
+	</div>
+}
+
+templ PanelIndexDisplay(panelCount int, currentPanelIndex int) {
+	<div class="flex gap-2">
+		for i := 1; i <= panelCount; i++ {
+			if i == currentPanelIndex {
+				<div class={ "h-2 w-8 border border-primary/50 bg-amber-500" }></div>
+			} else {
+				<div class={ "h-2 w-8 border border-primary/50" }></div>
+			}
+		}
 	</div>
 }

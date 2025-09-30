@@ -18,7 +18,7 @@ templ Admin(files []db.GarminFitFile, currentPage int, totalPages int, total int
 			// Form to upload garmin folder:
 			<form
 				class="mt-4 flex items-center gap-4 from-orange-200 via-orange-100 to-orange-50 p-4 rounded-lg shadow-md hover:shadow-xl"
-				hx-post={ routes.AdminUploadGarmin }
+				hx-post={ routes.GarminUpload }
 				hx-target="#upload-result"
 				hx-swap="innerHTML"
 				enctype="multipart/form-data"
