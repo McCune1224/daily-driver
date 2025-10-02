@@ -5,6 +5,7 @@ import (
 	"daily-driver/web/static/templates/panel"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -45,7 +46,7 @@ func (h *Handler) RenderPanels(c echo.Context) error {
 func (h *Handler) UpdatePanelIndex(c echo.Context) error {
 	cookie, err := c.Cookie("panel_index")
 	if err != nil {
-		if err == echo.ErrCookieNotFound {
+		if strings.Contains(err.Error(), "named cookie not present") {
 			// If the cookie is not found, set it to 0
 			c.SetCookie(&http.Cookie{
 				Name:  "panel_index",
