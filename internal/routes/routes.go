@@ -13,7 +13,8 @@ const (
 	GarminUpload = GarminBase + "/upload"
 
 	// Panel routes
-	PanelBase = "/panel"
+	PanelBase  = "/panel"
+	PanelIndex = PanelBase + "/index"
 
 	// Art routes
 	ArtBase      = "/art"

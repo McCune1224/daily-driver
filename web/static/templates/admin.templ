@@ -58,10 +58,10 @@ templ Admin(files []db.GarminFitFile, currentPage int, totalPages int, total int
 		</div>
 		<div class="mt-4 flex justify-center space-x-4">
 			if currentPage > 1 {
-				<a href={ fmt.Sprintf("/admin?page=%d", currentPage-1) } class="bg-orange-400 text-white px-4 py-2 rounded hover:bg-orange-600" hx-boost="true">Previous</a>
+				<a href={ fmt.Sprintf("%s?page=%d", routes.GarminBase, currentPage-1) } class="bg-orange-400 text-white px-4 py-2 rounded hover:bg-orange-600" hx-boost="true">Previous</a>
 			}
 			if currentPage < totalPages {
-				<a href={ fmt.Sprintf("/admin?page=%d", currentPage+1) } class="bg-orange-400 text-white px-4 py-2 rounded hover:bg-orange-600" hx-boost="true">Next</a>
+				<a href={ fmt.Sprintf("%s?page=%d", routes.GarminBase, currentPage+1) } class="bg-orange-400 text-white px-4 py-2 rounded hover:bg-orange-600" hx-boost="true">Next</a>
 			}
 		</div>
 	}

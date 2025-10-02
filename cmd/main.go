@@ -82,10 +82,7 @@ func main() {
 		logger.Panic("Failed to create database pool: " + err.Error())
 	}
 
-	handler := &handler.Handler{
-		Logger: logger,
-		DBPool: dbPool,
-	}
+	handler := handler.NewHandler(logger, dbPool)
 
 	handler.AttachRoutes(app)
 	app.Logger.Fatal(app.Start(":" + getPort()))

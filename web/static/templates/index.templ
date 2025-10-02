@@ -8,10 +8,16 @@ import "fmt"
 templ Index() {
 	@Base() {
 		<div
+			hx-swap="innerHTML"
+			hx-target="#panel-index"
+			hx-get={ routes.PanelIndex }
+			hx-trigger={ fmt.Sprintf("load, every %ss", strconv.Itoa(routes.PanelRotationIntervalSeconds)) }
+		></div>
+		<div
 			id="panel-root"
 			hx-target="#current-panel"
 			hx-swap="innerHTML"
-			hx-get="/panel"
+			hx-get={ routes.PanelBase }
 			hx-trigger={ fmt.Sprintf("load, every %ss", strconv.Itoa(routes.PanelRotationIntervalSeconds)) }
 		></div>
 		@panel.PanelManager()

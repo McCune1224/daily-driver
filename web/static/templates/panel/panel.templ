@@ -1,5 +1,8 @@
 package panel
 
+import "daily-driver/internal/routes"
+import "fmt"
+
 templ PanelManager(children ...templ.Component) {
 	<div class="mx-auto max-w-5xl">
 		<div class="mb-8 flex items-center justify-between">
@@ -11,9 +14,9 @@ templ PanelManager(children ...templ.Component) {
 			{ children... }
 		</div>
 		<div class="mt-8 flex items-center justify-center gap-4">
-			<div class="font-mono text-md text-white bg-black p-4">PANEL 1/3</div>
-			//<div class="h-px w-32 bg-primary/30"></div>
-			//<div class="font-mono text-xs text-primary">AUTO_ROTATE: 5s</div>
+			<div class="font-mono text-md text-white bg-black p-4">Something to place here?</div>
+			<div class="h-1 w-12 bg-black"></div>
+			<div class="font-mono text-xs text-primary">{ fmt.Sprintf("AUTO_ROTATE: %ds", routes.PanelRotationIntervalSeconds) }</div>
 		</div>
 	</div>
 }
@@ -26,9 +29,14 @@ templ CurrentPanelBar() {
 }
 
 templ PanelIndexDisplay(panelCount int, currentPanelIndex int) {
-	<div class="flex gap-2">
+	<div
+		id="panel-index"
+		hx-target="panel-index"
+		hx-swap="outerHTML"
+		class="flex gap-2"
+	>
 		for i := 1; i <= panelCount; i++ {
-			if i == currentPanelIndex {
+			if i-1 == currentPanelIndex {
 				<div class={ "h-2 w-8 border border-primary/50 bg-amber-500" }></div>
 			} else {
 				<div class={ "h-2 w-8 border border-primary/50" }></div>
