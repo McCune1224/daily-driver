@@ -45,6 +45,14 @@ func (h *Handler) RenderPanels(c echo.Context) error {
 func (h *Handler) UpdatePanelIndex(c echo.Context) error {
 	cookie, err := c.Cookie("panel_index")
 	if err != nil {
+		if err == echo.ErrCookieNotFound {
+			// If the cookie is not found, set it to 0
+			c.SetCookie(&http.Cookie{
+				Name:  "panel_index",
+				Value: "0",
+			})
+			return Render(c, 200, panel.PanelIndexDisplay(len(h.PanelHandlers), 0))
+		}
 		h.Logger.Error("Error retrieving panel_index cookie", zap.Error(err))
 		return c.String(500, "Internal Server Error")
 	}
