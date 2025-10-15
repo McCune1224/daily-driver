@@ -9,6 +9,8 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import "time"
+import "fmt"
+import "daily-driver/internal/service"
 
 func generateCalendarDays() []time.Time {
 	now := time.Now()
@@ -19,7 +21,28 @@ func generateCalendarDays() []time.Time {
 	return days
 }
 
-func PanelGarmin(index int) templ.Component {
+func GetTotalMiles(activities []service.GarminActivity) float64 {
+	total := 0.0
+	for _, activity := range activities {
+		total += activity.GetTotalMiles()
+	}
+	return total
+}
+
+func GetBestPace(activities []service.GarminActivity) string {
+	bestPace := 0.0
+	for _, activity := range activities {
+		pace := activity.GetFastestPace()
+		if bestPace == 0.0 || pace < bestPace {
+			bestPace = pace
+		}
+	}
+	minutes := int(bestPace)
+	seconds := int((bestPace - float64(minutes)) * 60)
+	return fmt.Sprintf("%d:%02d", minutes, seconds)
+}
+
+func PanelGarmin(activities []service.GarminActivity) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -45,35 +68,35 @@ func PanelGarmin(index int) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(index)
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(420)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/static/templates/garmin.templ`, Line: 18, Col: 73}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/static/templates/garmin.templ`, Line: 41, Col: 71}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</h3></div><div class=\"grid gap-8 md:grid-cols-2\"><div class=\"space-y-6\"><div><div class=\"mb-2 font-mono text-xs text-muted-foreground\">INDEX_VALUE</div><div class=\"font-mono text-5xl font-bold text-primary\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</h3></div><div class=\"grid gap-8 md:grid-cols-2\"><div class=\"space-y-6\"><div><div class=\"mb-2 font-mono text-xs text-muted-foreground\">TOTAL_WEEKLY_DISTANCE</div><div class=\"font-mono text-5xl font-bold text-primary\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(index)
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(GetTotalMiles(activities))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/static/templates/garmin.templ`, Line: 25, Col: 13}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/static/templates/garmin.templ`, Line: 49, Col: 33}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, " <span class=\"ml-2 text-2xl text-muted-foreground\">UNITS</span></div></div><div class=\"grid grid-cols-2 gap-4\"><div><div class=\"mb-1 font-mono text-xs text-muted-foreground\">LABEL_A</div><div class=\"font-mono text-3xl font-bold text-foreground\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<span class=\"ml-2 text-2xl text-muted-foreground\">MI</span></div></div><div class=\"grid grid-cols-2 gap-4\"><div><div class=\"mb-1 font-mono text-xs text-muted-foreground\">LABEL_A</div><div class=\"font-mono text-3xl font-bold text-foreground\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(index)
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(420)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/static/templates/garmin.templ`, Line: 32, Col: 71}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/static/templates/garmin.templ`, Line: 57, Col: 69}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -84,22 +107,22 @@ func PanelGarmin(index int) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(index)
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(420)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/static/templates/garmin.templ`, Line: 36, Col: 71}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/static/templates/garmin.templ`, Line: 61, Col: 69}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div></div></div></div><div class=\"space-y-6\"><div><div class=\"mb-2 font-mono text-xs text-muted-foreground\">LABEL_C</div><div class=\"font-mono text-3xl font-bold text-secondary\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div></div></div></div><div class=\"space-y-6\"><div><div class=\"mb-2 font-mono text-xs text-muted-foreground\">FASTEST_PACE</div><div class=\"font-mono text-3xl font-bold text-secondary\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
-		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(index)
+		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(GetBestPace(activities))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/static/templates/garmin.templ`, Line: 43, Col: 69}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/static/templates/garmin.templ`, Line: 68, Col: 87}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -110,9 +133,9 @@ func PanelGarmin(index int) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var7 string
-		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(index)
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(420)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/static/templates/garmin.templ`, Line: 49, Col: 14}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/static/templates/garmin.templ`, Line: 74, Col: 12}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -123,9 +146,9 @@ func PanelGarmin(index int) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var8 string
-		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(index)
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(420)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/static/templates/garmin.templ`, Line: 55, Col: 71}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/static/templates/garmin.templ`, Line: 80, Col: 69}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -143,7 +166,7 @@ func PanelGarmin(index int) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(day.Day())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/static/templates/garmin.templ`, Line: 65, Col: 17}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/static/templates/garmin.templ`, Line: 90, Col: 17}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {

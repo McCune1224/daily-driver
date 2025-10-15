@@ -2,11 +2,13 @@ package handler
 
 import (
 	"daily-driver/internal/db"
+	"daily-driver/internal/service"
 	"daily-driver/web/static/templates"
 	"io"
 	"strconv"
 	"strings"
 
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
 )
@@ -44,7 +46,27 @@ func (h *Handler) RenderGarminUploadPage(c echo.Context) error {
 }
 
 func (h *Handler) RenderGarminPanel(c echo.Context) error {
-	return Render(c, 200, templates.PanelGarmin(1))
+	q := db.New(h.DBPool)
+
+	// Just doing 4 weeks for right now for a nice monthly view?
+	rawGarminFiles, err := q.ListGarminFilesByPriorDays(c.Request().Context(), pgtype.Text{String: "28", Valid: true})
+	if err != nil {
+		h.Logger.Error("Failed to get garmin fit files", zap.Error(err))
+		return c.String(500, "Failed to get garmin fit files")
+	}
+
+	activities := make([]service.GarminActivity, 0, len(rawGarminFiles))
+
+	for _, rawGarminFile := range rawGarminFiles {
+		activity, err := service.DecodeGarminActivity(&rawGarminFile)
+		if err != nil {
+			h.Logger.Error("Failed to get garmin fit files", zap.Error(err))
+			return c.String(500, "Failed to get garmin fit files")
+		}
+		activities = append(activities, *activity)
+	}
+
+	return Render(c, 200, templates.PanelGarmin(activities))
 }
 
 func (h *Handler) UploadGarminFile(c echo.Context) error {
@@ -93,5 +115,4 @@ func (h *Handler) UploadGarminFile(c echo.Context) error {
 	}
 
 	return c.String(200, "Files uploaded successfully")
-
 }

@@ -26,7 +26,7 @@ func NewHandler(logger *zap.Logger, dbPool *pgxpool.Pool) *Handler {
 	h.PanelHandlers = []func(echo.Context) error{
 		// func(c echo.Context) error { return h.RenderPanelWeather(c) },
 		func(c echo.Context) error { return h.RenderGarminPanel(c) },
-		func(c echo.Context) error { return h.RenderPanelWeather(c) },
+		// func(c echo.Context) error { return h.RenderPanelWeather(c) },
 		// func(c echo.Context) error { return h.RenderGarminPanel(c) },
 	}
 	h.Logger.Info("Handler initialized")

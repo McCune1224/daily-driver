@@ -144,6 +144,39 @@ func (q *Queries) ListGarminFilesByFileCategory(ctx context.Context, fileCategor
 	return items, nil
 }
 
+const listGarminFilesByPriorDays = `-- name: ListGarminFilesByPriorDays :many
+   select id, filename, data, uploaded_at, file_category
+   from garmin_fit_files
+   where uploaded_at between CURRENT_DATE - ($1 || ' days')::interval and CURRENT_DATE
+   order by uploaded_at desc
+`
+
+func (q *Queries) ListGarminFilesByPriorDays(ctx context.Context, dollar_1 pgtype.Text) ([]GarminFitFile, error) {
+	rows, err := q.db.Query(ctx, listGarminFilesByPriorDays, dollar_1)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GarminFitFile
+	for rows.Next() {
+		var i GarminFitFile
+		if err := rows.Scan(
+			&i.ID,
+			&i.Filename,
+			&i.Data,
+			&i.UploadedAt,
+			&i.FileCategory,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listGarminFilesPaginated = `-- name: ListGarminFilesPaginated :many
 select id, filename, data, uploaded_at, file_category
 from garmin_fit_files
