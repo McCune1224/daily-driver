@@ -2,13 +2,25 @@ package handler
 
 import (
 	"daily-driver/internal/routes"
+	"daily-driver/internal/service"
 	"daily-driver/web/static/templates"
+	"daily-driver/web/static/templates/panel"
 
 	"github.com/a-h/templ"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
+	"time"
 )
+
+// Helper functions for mock data
+func stringPtr(s string) *string {
+	return &s
+}
+
+func intPtr(i int) *int {
+	return &i
+}
 
 // TODO: Add DB stuff...
 type Handler struct {
@@ -26,7 +38,7 @@ func NewHandler(logger *zap.Logger, dbPool *pgxpool.Pool) *Handler {
 	h.PanelHandlers = []func(echo.Context) error{
 		// func(c echo.Context) error { return h.RenderPanelWeather(c) },
 		func(c echo.Context) error { return h.RenderGarminPanel(c) },
-		// func(c echo.Context) error { return h.RenderPanelWeather(c) },
+		func(c echo.Context) error { return h.RenderPanelStartGG(c) },
 		// func(c echo.Context) error { return h.RenderGarminPanel(c) },
 	}
 	h.Logger.Info("Handler initialized")
@@ -64,4 +76,47 @@ func (h *Handler) AttachRoutes(e *echo.Echo) {
 
 	// Art routes
 	e.GET(routes.ArtRandomAPI, h.RenderPanelArtwork)
+
+	// StartGG routes
+	e.GET(routes.StartGGBase, h.RenderPanelStartGG)
+}
+
+// RenderPanelStartGG renders the Start.GG esports panel
+func (h *Handler) RenderPanelStartGG(c echo.Context) error {
+	// Create Start.GG client
+	client, err := service.NewStartGGClient()
+	if err != nil {
+		h.Logger.Error("Failed to create Start.GG client", zap.Error(err))
+		return Render(c, 200, panel.PanelStartGG(&panel.StartGGPanelData{
+			UserSlug:   "mckusa", // Default user - could be made configurable
+			LastUpdate: time.Now(),
+			Error:      "Failed to initialize Start.GG API client: " + err.Error(),
+		}))
+	}
+
+	// Fetch user tournament history
+	results, err := client.GetUserTournamentHistory("mckusa", 10) // Fetch last 10 tournaments
+	if err != nil {
+		h.Logger.Error("Failed to fetch tournament history", zap.Error(err))
+		return Render(c, 200, panel.PanelStartGG(&panel.StartGGPanelData{
+			UserSlug:   "mckusa",
+			LastUpdate: time.Now(),
+			Error:      "Failed to fetch tournament data: " + err.Error(),
+		}))
+	}
+
+	// Get user info from the first result if available
+	userName := ""
+	if len(results) > 0 {
+		// Note: The API structure might not include user name in this query
+		// We could make a separate query for user info if needed
+		userName = "mckusa" // Default for now
+	}
+
+	return Render(c, 200, panel.PanelStartGG(&panel.StartGGPanelData{
+		UserSlug:   "mckusa",
+		UserName:   userName,
+		Results:    results,
+		LastUpdate: time.Now(),
+	}))
 }

@@ -16,11 +16,14 @@ const (
 	PanelBase  = "/panel"
 	PanelIndex = PanelBase + "/index"
 
+	// API routes
+	APIBase    = "/api"
+	WeatherAPI = APIBase + "/weather"
+
 	// Art routes
 	ArtBase      = "/art"
 	ArtRandomAPI = ArtBase + "/random"
 
-	// API routes
-	APIBase    = "/api"
-	WeatherAPI = APIBase + "/weather"
+	// StartGG routes
+	StartGGBase = "/startgg"
 )

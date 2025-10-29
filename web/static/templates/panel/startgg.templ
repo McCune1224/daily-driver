@@ -1,0 +1,234 @@
+package panel
+
+import (
+	"daily-driver/internal/service"
+	"fmt"
+	"strings"
+	"time"
+)
+
+type StartGGPanelData struct {
+	UserSlug   string
+	UserName   string
+	Results    []service.TournamentResult
+	LastUpdate time.Time
+	Error      string
+}
+
+// formatTournamentDate formats tournament start date
+func formatTournamentDate(timestamp int64) string {
+	if timestamp == 0 {
+		return "N/A"
+	}
+	t := time.Unix(timestamp, 0)
+	return t.Format("Jan 2, 2006")
+}
+
+// getPlacementColor returns color class based on placement
+func getPlacementColor(placement, entrants int) string {
+	if placement == 0 || entrants == 0 {
+		return "text-muted-foreground"
+	}
+
+	ratio := float64(placement) / float64(entrants)
+	switch {
+	case ratio <= 0.1:
+		return "text-green-600" // Top 10%
+	case ratio <= 0.25:
+		return "text-blue-600" // Top 25%
+	case ratio <= 0.5:
+		return "text-yellow-600" // Top 50%
+	default:
+		return "text-red-600" // Bottom 50%
+	}
+}
+
+// getSeedDiff returns the difference between seed and placement
+func getSeedDiff(seed, placement int) int {
+	if seed == 0 || placement == 0 {
+		return 0
+	}
+	return seed - placement
+}
+
+// getSeedDiffColor returns color based on seed vs placement difference
+func getSeedDiffColor(diff int) string {
+	switch {
+	case diff > 5:
+		return "text-green-600" // Much better than seed
+	case diff > 0:
+		return "text-blue-600" // Better than seed
+	case diff == 0:
+		return "text-yellow-600" // Exactly as seeded
+	case diff > -5:
+		return "text-orange-600" // Slightly worse than seed
+	default:
+		return "text-red-600" // Much worse than seed
+	}
+}
+
+// getGameIcon returns an emoji icon for the game
+func getGameIcon(gameName string) string {
+	gameName = strings.ToLower(gameName)
+	switch {
+	case strings.Contains(gameName, "smash"):
+		return "🎮"
+	case strings.Contains(gameName, "street fighter"):
+		return "👊"
+	case strings.Contains(gameName, "tekken"):
+		return "🥊"
+	case strings.Contains(gameName, "mortal kombat"):
+		return "⚔️"
+	case strings.Contains(gameName, "guilty gear"):
+		return "🎵"
+	case strings.Contains(gameName, "dragon quest"):
+		return "🐉"
+	default:
+		return "🎯"
+	}
+}
+
+templ PanelStartGG(data *StartGGPanelData) {
+	<div class="border-2 border-primary/50 bg-white p-8 md:p-12">
+		<div class="mb-8 flex items-center gap-3">
+			<div class="h-1 w-12 bg-black"></div>
+			<h3 class="font-mono text-lg text-secondary">START.GG_ESPORTS.SYS</h3>
+		</div>
+
+		if data.Error != "" {
+			<div class="mb-6 rounded border border-red-500/50 bg-red-900/20 p-4">
+				<div class="font-mono text-sm text-red-400">ERROR: { data.Error }</div>
+			</div>
+		}
+
+		<div class="mb-6">
+			<div class="mb-2 font-mono text-xs text-muted-foreground">PLAYER_PROFILE</div>
+			<div class="font-mono text-xl font-bold text-primary">
+				if data.UserName != "" {
+					{ data.UserName }
+				} else {
+					{ strings.ToUpper(data.UserSlug) }
+				}
+			</div>
+			<div class="mt-1 font-mono text-xs text-muted-foreground">
+				LAST_UPDATE: { data.LastUpdate.Format("15:04:05 MST") }
+			</div>
+		</div>
+
+		if len(data.Results) > 0 {
+			<div class="space-y-6">
+				<div class="mb-4 font-mono text-xs text-muted-foreground">RECENT_TOURNAMENTS</div>
+				@renderTournamentResults(data.Results)
+			</div>
+		} else if data.Error == "" {
+			<div class="text-center py-12">
+				<div class="font-mono text-4xl mb-4">🎮</div>
+				<div class="font-mono text-lg text-muted-foreground mb-2">NO_TOURNAMENT_DATA</div>
+				<div class="font-mono text-sm text-muted-foreground">
+					Tournament history will appear here once available
+				</div>
+			</div>
+		}
+
+		<div class="mt-8 border-t border-primary/30 pt-6">
+			<div class="flex items-center justify-between font-mono text-xs text-muted-foreground">
+				<span>DATA_SOURCE: START.GG_API</span>
+				<span>
+					REFRESH:
+					<button
+						hx-get="/startgg"
+						hx-target="#current-panel"
+						hx-swap="innerHTML"
+						class="text-primary hover:text-primary/80 underline cursor-pointer"
+					>
+						MANUAL
+					</button>
+				</span>
+			</div>
+		</div>
+	</div>
+}
+
+templ renderTournamentResults(results []service.TournamentResult) {
+	for _, result := range results {
+		<div class="border border-primary/20 rounded p-4 bg-gray-50/50">
+			<div class="flex items-start justify-between mb-3">
+				<div class="flex-1">
+					<div class="font-mono text-sm font-bold text-foreground mb-1">
+						{ result.Tournament.Name }
+					</div>
+					<div class="font-mono text-xs text-muted-foreground">
+						{ formatTournamentDate(result.Tournament.StartAt) }
+						if result.Tournament.City != nil && result.Tournament.State != nil {
+							<span class="ml-2">
+								{ *result.Tournament.City }, { *result.Tournament.State }
+							</span>
+						}
+					</div>
+				</div>
+				if len(result.Tournament.Events) > 0 {
+					<div class="ml-4 text-right">
+						<div class="font-mono text-lg">
+							{ getGameIcon(result.Tournament.Events[0].Videogame.Name) }
+						</div>
+						<div class="font-mono text-xs text-muted-foreground">
+							{ result.Tournament.Events[0].Videogame.Name }
+						</div>
+					</div>
+				}
+			</div>
+
+			<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+				<div>
+					<div class="mb-1 font-mono text-xs text-muted-foreground">PLACEMENT</div>
+					<div class={ "font-mono text-lg font-bold", getPlacementColor(result.Placement, result.Entrants) }>
+						#{ result.Placement }
+						if result.Entrants > 0 {
+							<span class="text-xs text-muted-foreground">/{ result.Entrants }</span>
+						}
+					</div>
+				</div>
+
+				<div>
+					<div class="mb-1 font-mono text-xs text-muted-foreground">SEED</div>
+					<div class="font-mono text-lg font-bold text-blue-600">
+						#{ result.Seed }
+					</div>
+				</div>
+
+				<div>
+					<div class="mb-1 font-mono text-xs text-muted-foreground">SEED_DIFF</div>
+					<div class={ "font-mono text-lg font-bold", getSeedDiffColor(getSeedDiff(result.Seed, result.Placement)) }>
+						if diff := getSeedDiff(result.Seed, result.Placement); diff > 0 {
+							+{ fmt.Sprintf("%d", diff) }
+						} else if diff < 0 {
+							{ fmt.Sprintf("%d", diff) }
+						} else {
+							0
+						}
+					</div>
+				</div>
+
+				<div>
+					<div class="mb-1 font-mono text-xs text-muted-foreground">SETS_PLAYED</div>
+					<div class="font-mono text-lg font-bold text-purple-600">
+						{ fmt.Sprintf("%d", len(result.Sets)) }
+					</div>
+				</div>
+			</div>
+
+			if len(result.Sets) > 0 {
+				<div class="mt-3 pt-3 border-t border-primary/20">
+					<div class="mb-2 font-mono text-xs text-muted-foreground">RECENT_SETS</div>
+					<div class="space-y-1">
+						for _, set := range result.Sets {
+							<div class="font-mono text-xs text-muted-foreground">
+								{ set.DisplayScore }
+							</div>
+						}
+					</div>
+				</div>
+			}
+		</div>
+	}
+}

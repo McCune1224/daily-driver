@@ -37,7 +37,10 @@ func TestFoobar(t *testing.T) {
 	}
 
 	activity := filedef.NewActivity(decFit.Messages...)
-	t.Logf("Activity: %+v", activity)
+	if activity == nil {
+		t.Fatal("Failed to create activity from FIT messages")
+	}
+	// t.Logf("Activity: %+v", activity)
 
 	// service.DecodeGarminActivity(GarminFolderPath + "2023-06-01-07-30-00.fit")
 }
