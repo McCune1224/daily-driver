@@ -6,21 +6,13 @@ import (
 	"daily-driver/web/static/templates"
 	"daily-driver/web/static/templates/panel"
 
+	"time"
+
 	"github.com/a-h/templ"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
-	"time"
 )
-
-// Helper functions for mock data
-func stringPtr(s string) *string {
-	return &s
-}
-
-func intPtr(i int) *int {
-	return &i
-}
 
 // TODO: Add DB stuff...
 type Handler struct {
@@ -41,7 +33,6 @@ func NewHandler(logger *zap.Logger, dbPool *pgxpool.Pool) *Handler {
 		func(c echo.Context) error { return h.RenderPanelStartGG(c) },
 		// func(c echo.Context) error { return h.RenderGarminPanel(c) },
 	}
-	h.Logger.Info("Handler initialized")
 	h.Logger.Info("Handler initialized", zap.Int("num_panel_handlers", len(h.PanelHandlers)))
 	return h
 }
@@ -73,6 +64,7 @@ func (h *Handler) AttachRoutes(e *echo.Echo) {
 	// Panel routes
 	e.GET(routes.PanelBase, h.RenderPanels)
 	e.GET(routes.PanelIndex, h.UpdatePanelIndex)
+	e.POST(routes.PanelRotationToggle, h.TogglePanelRotation)
 
 	// Art routes
 	e.GET(routes.ArtRandomAPI, h.RenderPanelArtwork)

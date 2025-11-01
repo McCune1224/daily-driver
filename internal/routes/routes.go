@@ -13,8 +13,10 @@ const (
 	GarminUpload = GarminBase + "/upload"
 
 	// Panel routes
-	PanelBase  = "/panel"
-	PanelIndex = PanelBase + "/index"
+	PanelBase           = "/panel"
+	PanelRotationToggle = PanelBase + "/toggle-rotation"
+	PanelIndex          = PanelBase + "/index"
+	PanelTest           = PanelBase + "/test/:panel_name"
 
 	// API routes
 	APIBase    = "/api"
