@@ -62,7 +62,7 @@ func main() {
 	}))
 
 	// Serve static files from SvelteKit build (production)
-	e.Static("/", "../frontend/build")
+	e.Static("/", "./frontend/build")
 
 	// API routes
 	api := e.Group("/api")
