@@ -1,31 +1,41 @@
-# AGENTS.md
+# Aperture Science Portal - Agent Guidelines
 
-## Build/Run Commands
-- **Dev**: `make run` (runs air with live reload)
-- **Build**: `make build` (generates CSS, Templ, and SQLC)
-- **Test All**: `go test ./...`
-- **Test Single**: `go test -v -run TestName ./path/to/package`
-- **CSS Watch**: `make css`
-- **Templ Watch**: `make templ`
+## Build/Lint/Test Commands
 
-## Tech Stack
-Go 1.24, Echo v4, Templ, TailwindCSS, HTMX, PostgreSQL (pgx/v5), SQLC, Zap (logging)
+### Frontend (SvelteKit/TypeScript)
+- **Build**: `npm run build` (frontend/)
+- **Dev server**: `npm run dev` (frontend/)
+- **Lint/Type check**: `npm run check` (includes svelte-check)
+- **Install deps**: `npm install` (frontend/)
 
-## Code Style
+### Backend (Go)
+- **Build**: `make backend-build` or `go build -o bin/server cmd/api/main.go` (backend/)
+- **Run**: `make backend-run` or `go run cmd/api/main.go` (backend/)
+- **Install deps**: `make backend-deps` or `go mod download` (backend/)
+- **Tests**: No test files found, but testify framework available for future tests
 
-**Imports**: Group stdlib, external, then local packages with blank lines between groups. Use named imports for clarity when needed (e.g., `handler "daily-driver/internal/handler"`).
+### Database
+- **Migrations up**: `make db-migrate-up`
+- **Generate SQLC**: `make sqlc-generate`
 
-**Error Handling**: Return errors immediately; log with zap.Logger using structured fields (e.g., `logger.Info("msg", zap.String("key", val))`). Use `logger.Panic()` for fatal startup errors.
+## Code Style Guidelines
 
-**Naming**: Use camelCase for private, PascalCase for exported. Prefer descriptive names over abbreviations. Constants in PascalCase (e.g., `DevPort`).
+### Go Backend
+- **Imports**: Standard library first, then third-party, then local packages
+- **Error handling**: Use `fmt.Errorf` with `%w` verb for error wrapping
+- **Logging**: Use zap logger with structured logging
+- **Naming**: PascalCase for exported, camelCase for unexported
+- **Types**: Use struct tags for JSON marshaling (`json:"field_name"`)
 
-**Types**: Define struct types for domain models. Use pointers for handlers/services. Nil-check pointers before dereferencing (see service/garmin.go).
-
-**Functions**: Keep functions focused and small. Extract helper functions for reusability. Document exported functions with comments.
-
-**Database**: Use SQLC for type-safe queries. Pool connections via pgxpool. Define queries in `internal/db/query.sql`, schema in `internal/db/schema.sql`.
-
-**Templates**: Use Templ for type-safe HTML. Custom `Render()` function wraps templ.Component (see handler/handler.go:38).
-
-**Structure**: Follow existing folder layout: `cmd/` for entry, `internal/` for app code, `web/static/` for assets, `test/` for tests.
-
+### TypeScript/Svelte Frontend
+- **Strict mode**: Enabled in tsconfig.json
+- **Imports**: ES6 imports with relative paths (`$lib/` for lib imports)
+- **Types**: Avoid `any` types - use proper TypeScript interfaces
+- **Components**: PascalCase for component names, kebab-case for CSS classes
+- **Error handling**: Throw errors in API functions, catch in components
+- UI: Should be using TailwindCSS to design a UI aesthetic like that of the Portal Game Series (white background, thin black lines for borders, mono-spaced / techy font and design) 
+### General
+- **Formatting**: Use `gofmt` for Go, Prettier for frontend (if configured)
+- **Comments**: Document exported functions and complex logic
+- **Security**: Never log sensitive data, validate all inputs</content>
+<parameter name="filePath">/home/mckusa/Code/aperture/AGENTS.md

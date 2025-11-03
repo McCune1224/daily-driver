@@ -1,31 +1,43 @@
-# VCS
+
+# Git
 .git
 .gitignore
+.gitattributes
 
-# Dev tooling/config
-.air.toml
-Makefile
-sqlc.yaml
+# Documentation
+README.md
+*.md
 
-# Tests and fixtures
-test/
-*.test
-*.out
+# Backend artifacts
+backend/bin/
+backend/.env
+backend/.env.local
+backend/internal/repository/*.go
 
-# Large local/sample data not needed in image
-data/
-*.FIT
-*.fit
+# Frontend artifacts
+frontend/node_modules/
+frontend/.svelte-kit/
+frontend/build/
+frontend/.env
+frontend/.env.local
 
-# Node-related (if present)
-node_modules/
-
-# Logs and temp files
-*.log
-*.tmp
-
-# OS/editor noise
-.DS_Store
+# IDE
+.vscode/
+.idea/
 *.swp
 *.swo
 
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Database
+*.db
+*.sqlite
+
+# Development
+Makefile
+docker-compose.yml

@@ -1,47 +1,54 @@
-# Multi-stage Dockerfile for daily-driver (Go + Templ + Tailwind static assets)
-# Builder stage: use Go toolchain and run Templ codegen
-FROM golang:1.24-bookworm AS builder
+# Multi-stage Dockerfile for Aperture Science Data Portal
+# Stage 1: Build SvelteKit frontend
+FROM node:20-alpine AS frontend-builder
 
-# Disable CGO for a static binary
-ENV CGO_ENABLED=0
+WORKDIR /frontend
 
-WORKDIR /src
+# Copy package files and install dependencies
+COPY frontend/package*.json ./
+RUN npm ci
 
-# Install templ CLI matching go.mod version
-RUN go install github.com/a-h/templ/cmd/templ@v0.3.943
+# Copy frontend source and build
+COPY frontend/ ./
+RUN npm run build
 
-# Cache modules first
-COPY go.mod go.sum ./
+# Stage 2: Build Go backend
+FROM golang:1.25-alpine AS backend-builder
+
+WORKDIR /backend
+
+# Install build dependencies
+RUN apk add --no-cache git
+
+# Copy go mod files and download dependencies
+COPY backend/go.mod backend/go.sum ./
 RUN go mod download
 
-# Copy the rest of the source
-COPY . .
+# Copy backend source
+COPY backend/ ./
 
-# Generate templ files (safe no-op if already generated)
-RUN /go/bin/templ generate
+# Build the Go binary
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o server ./cmd/api
 
-# Build the server binary
-RUN go build -trimpath -ldflags="-s -w" -o /out/server ./cmd
+# Stage 3: Final runtime image
+FROM alpine:latest
 
-# Runtime stage: minimal image with certs and tzdata, non-root user
-FROM alpine:3.20 AS runtime
-RUN adduser -D -H -u 10001 appuser \
-  && apk add --no-cache ca-certificates tzdata
+# Install ca-certificates for HTTPS requests to external APIs
+RUN apk --no-cache add ca-certificates
 
 WORKDIR /app
 
-# Copy the binary and static assets
-COPY --from=builder /out/server /app/server
-COPY --from=builder /src/web/static /app/web/static
+# Copy the built Go binary from backend-builder
+COPY --from=backend-builder /backend/server .
 
-# Create writable log file location for the app
-RUN touch /app/application.log && chown -R appuser:appuser /app
+# Copy the built frontend from frontend-builder
+COPY --from=frontend-builder /frontend/build ./frontend/build
 
-USER appuser
+# Copy database migrations
+COPY backend/db/migrations ./db/migrations
 
-# Railway sets PORT; the app defaults to 8080 when PORT is not set
-ENV PORT=8080
+# Expose port (Railway will inject PORT env variable)
 EXPOSE 8080
 
-ENTRYPOINT ["/app/server"]
-
+# Run the server
+CMD ["./server"]

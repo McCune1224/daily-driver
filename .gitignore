@@ -1,35 +1,25 @@
-# Go
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
-bin/
-*.test
-*.out
-go.work
+# Backend
+backend/bin/
+backend/.env
+backend/internal/repository/*.go
+
+# Frontend
+frontend/node_modules/
+frontend/build/
+frontend/.svelte-kit/
+frontend/.env
+frontend/.env.local
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
-
-# OS
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
 
 # Logs
 *.log
 
-# Environment
-.env
-.env.local
-
-tmp/
+# Database
+*.db
+*.sqlite
