@@ -33,7 +33,16 @@
 - **Types**: Avoid `any` types - use proper TypeScript interfaces
 - **Components**: PascalCase for component names, kebab-case for CSS classes
 - **Error handling**: Throw errors in API functions, catch in components
-- UI: Should be using TailwindCSS to design a UI aesthetic like that of the Portal Game Series (white background, thin black lines for borders, mono-spaced / techy font and design) 
+
+### UI Design Guidelines (Portal Aesthetic)
+- **Color Palette**: Primarily white backgrounds (#FFFFFF), black text/borders (#000000), with subtle blue accents (#00BFFF or similar) for interactive elements. Avoid bright colors, gradients, or complex color schemes.
+- **Borders**: Thin black lines (1px solid #000000) for all borders, buttons, inputs, and containers. Use rounded corners sparingly (border-radius: 4px max).
+- **Typography**: Monospace font family (e.g., 'Courier New', 'Monaco', or 'Consolas') for all text. Use consistent font sizes: headings 24px+, body 16px, small text 12px.
+- **Layout**: Clean, grid-based layouts with ample white space. Use flexbox/grid for alignment. Avoid cluttered designs; prioritize simplicity and readability.
+- **Components**: Minimalist design - buttons as simple rectangles with black borders, inputs with thin borders, cards with subtle shadows (box-shadow: 0 2px 4px rgba(0,0,0,0.1)).
+- **Interactive Elements**: Hover states with light blue background (#E0F7FF), active states with darker blue. No animations unless essential.
+- **Icons**: Simple geometric shapes or text-based icons. Avoid complex illustrations.
+- **Overall Feel**: Techy, scientific, clean interface reminiscent of Aperture Science labs - functional, unadorned, with a retro-tech vibe. 
 ### General
 - **Formatting**: Use `gofmt` for Go, Prettier for frontend (if configured)
 - **Comments**: Document exported functions and complex logic

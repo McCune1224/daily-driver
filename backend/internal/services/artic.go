@@ -23,17 +23,17 @@ type ArtworkResponse struct {
 }
 
 type ArtworkData struct {
-	ID           int    `json:"id"`
-	Title        string `json:"title"`
+	ID            int    `json:"id"`
+	Title         string `json:"title"`
 	ArtistDisplay string `json:"artist_display"`
-	DateDisplay  string `json:"date_display"`
-	ImageID      string `json:"image_id"`
-	Department   string `json:"department_title"`
-	ArtworkType  string `json:"artwork_type_title"`
+	DateDisplay   string `json:"date_display"`
+	ImageID       string `json:"image_id"`
+	Department    string `json:"department_title"`
+	ArtworkType   string `json:"artwork_type_title"`
 }
 
 type ArtworksListResponse struct {
-	Data []ArtworkData `json:"data"`
+	Data       []ArtworkData  `json:"data"`
 	Pagination PaginationData `json:"pagination"`
 }
 
@@ -48,7 +48,7 @@ type PaginationData struct {
 // GetRandomArtwork fetches a random artwork from the collection
 func (s *ArticService) GetRandomArtwork() (*ArtworkData, error) {
 	// Get random page
-	url := fmt.Sprintf("%s/artworks?limit=1&fields=id,title,artist_display,image_id,date_display,department_title,artwork_type_title&page=%d", 
+	url := fmt.Sprintf("%s/artworks?limit=1&fields=id,title,artist_display,image_id,date_display,department_title,artwork_type_title&page=%d",
 		s.endpoint, 1+int(randomInt(1000)))
 
 	resp, err := s.client.Get(url)
@@ -71,7 +71,7 @@ func (s *ArticService) GetRandomArtwork() (*ArtworkData, error) {
 
 // GetArtworkByID fetches a specific artwork by ID
 func (s *ArticService) GetArtworkByID(id int) (*ArtworkData, error) {
-	url := fmt.Sprintf("%s/artworks/%d?fields=id,title,artist_display,image_id,date_display,department_title,artwork_type_title", 
+	url := fmt.Sprintf("%s/artworks/%d?fields=id,title,artist_display,image_id,date_display,department_title,artwork_type_title",
 		s.endpoint, id)
 
 	resp, err := s.client.Get(url)
